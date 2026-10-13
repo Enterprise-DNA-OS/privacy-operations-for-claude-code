@@ -38,23 +38,23 @@
 
 ## What is this
 
-Privacy Operations for Claude Code does the job you pay DataGrail for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the DataGrail dashboard cannot.
+Privacy Operations for Claude Code handles privacy assessment and review records, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the relevant query against your own records. Add new questions as your review process changes.
 
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays DataGrail per year, all in, with a source. -->
+DataGrail lists an Essentials annual benchmark of US$36,000 on its vendor-supplied [HubSpot marketplace listing](https://ecosystem.hubspot.com/marketplace/listing/datagrail-hubspot-integration), checked 13 October 2026. This is a listed contract benchmark, not a verified NZ/AU invoice or a current small-business quote. Its own website offers pricing by enquiry.
 
 Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=datagrail).
 
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
+Built for the trusted privacy operator who owns assessment reviews, retention decisions and request follow-ups. Keep system purposes, processing activities, risks, actions and evidence together. This is the administrative record layer: it does not discover personal data, enforce consent or fulfil requests across other systems. Omni by Enterprise DNA can build the agreed connections and team screens, then run your version for one setup fee and a retainer.
 
 ## Why no front end
 
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
+- The operator reads and updates records through commands, then shares read-only reports.
 - Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
 - No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
 
 ## Quick start
 
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+No database install (an embedded Postgres runs inside Node):
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/privacy-operations-for-claude-code.git
@@ -63,7 +63,7 @@ npm install
 npm run demo
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+Then open the folder in Claude Code and type a slash command. Start with /assessment-triage, then /requests-due. For real records, choose an empty DATA_DIR and run migrate without the fictional seed.
 
 ### Use it with your own Postgres or Supabase
 
@@ -71,15 +71,42 @@ Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same 
 
 ## The commands
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
-
-| Command | What it does |
+| Command | Job |
 |---|---|
-| `/...` | ... |
+| /systems | Read system owners, purposes and retention evidence |
+| /activities | Read the processing activity register |
+| /assessments | Read assessments, action counts and review freshness |
+| /actions | Read action owners, deadlines and evidence |
+| /requests | Read request metadata and confirmed deadlines |
+| /assessment-triage | Rank the assessment review queue by recorded risk |
+| /renewals-due | Find assessments due for renewal in the next 60 days |
+| /retention-review | Review missing or upcoming retention decisions |
+| /requests-due | Review unknown, overdue and approaching request deadlines |
+| /overdue-actions | Find overdue and undated open actions |
+| /processing-review | Review purposes, recipients and accountable owners |
+| /owner-workload | Count assessment and action work by owner |
+| /risk-register | Compare risk scores with actions and review freshness |
+| /reviews | Read approvals and identify obsolete assessment versions |
+| /compliance | Check privacy record evidence against cited rules |
+| /attention | Find missing owners, evidence and overdue work |
+| /history | Read attributed changes |
+| /show | Read one record and its change history |
+| /add | Add a system, activity, assessment, action or request |
+| /update | Update an existing record with a version check |
+| /log | Add an assessment note with an actor |
+| /record-review | Record a reviewed assessment with evidence and a separate approver label |
+| /import | Rehearse and import a DataGrail assessment export |
+| /export | Export every record, source field, note and review |
+| /weekly-review | Draft the Monday assessment, request and action review |
+| /draft-assessment | Draft an internal assessment brief from its history |
+| /draft-request | Draft an internal request handling brief |
+| /help | Read CLI commands and editable fields |
+| /customise | Add a field or rule through a tested migration |
+| /new-view | Add a branded read-only report |
 
 ## Instead of datagrail
 
-<!-- TODO(author): how to bring data across from DataGrail; link docs/replace-datagrail.md -->
+Download the DataGrail assessment CSV, rehearse the import, then compare source identifiers and dates. Custom headers use an explicit mapping. [Switching guide](docs/replace-datagrail.md).
 
 ## Architecture
 
@@ -105,7 +132,7 @@ Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a 
 
 ## Want it installed and run for you?
 
-Enterprise DNA installs Privacy Operations for Claude Code for your business, migrates your DataGrail data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+Enterprise DNA installs Privacy Operations for Claude Code for your business, migrates your DataGrail data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Centre. One setup fee, then a monthly retainer.
 
 - Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=datagrail)
 - Read more: [enterprisedna.co/omni/instead-of/datagrail](https://enterprisedna.co/omni/instead-of/datagrail?utm_source=github&utm_medium=readme&utm_campaign=datagrail)
@@ -113,3 +140,47 @@ Enterprise DNA installs Privacy Operations for Claude Code for your business, mi
 ## License
 
 MIT. Copyright (c) 2026 Enterprise DNA.
+
+## Evidence and reviews
+
+Every write needs --actor. Update and record-review also need --expected-version from show. Names match case insensitively, UUID prefixes work, and ambiguous matches list candidates and exit 1. Reviews require evidence, a separate approver label, risk scores, a future renewal date and no open actions. Changes to an assessment, its actions or its system invalidate the current review. Labels are attribution, not authenticated identities. [Rules and sources](docs/compliance.md).
+
+The importer preserves unknown vendor fields and the original approval state. Imported assessments start in-review. Whole batches roll back on an error, dry runs leave no records, and changed source rows require --update-existing. The free importer covers the assessment list, not attachments, answers or the whole vendor history.
+
+Request deadlines are entered and justified by the privacy officer. The software never decides legal applicability or calculates statutory periods. Keep sensitive subject details in your approved system and use case references here.
+
+## Reports and paperwork
+
+npm run view produces the weekly position and evidence report. npm run docs produces an internal assessment brief per assessment and a request handling brief per request. Edit brand.json for your business name, logo and colours. Drafts never send.
+
+## Ten questions to ask of your records
+
+These answers work today. DataGrail also offers reporting and a query assistant, so there is no unsupported claim that it cannot answer an equivalent question.
+
+1. Which assessments have the greatest recorded risk and open actions? `assessment-triage`
+2. Which assessment renewals fall within the next 60 days? `renewals-due`
+3. Which systems lack a retention rule or review date? `retention-review`
+4. Which open requests have no confirmed deadline? `requests-due`
+5. Which action deadlines have passed? `overdue-actions`
+6. Which processing activities have no accountable owner? `processing-review`
+7. Who carries the largest assessment workload? `owner-workload`
+8. Which prior approvals refer to outdated records? `reviews`
+9. Which records need security or retention evidence? `compliance`
+10. What changed, and who recorded the change? `history`
+
+## Your first hour: ten things to ask for
+
+1. Put our name and logo in brand.json.
+2. Rehearse our assessment export.
+3. Show assessments missing evidence.
+4. Find undated privacy requests.
+5. Review overdue actions.
+6. Compare retention purposes across systems.
+7. Show our team workload.
+8. Draft our Monday review.
+9. Record a completed assessment review.
+10. Add our business-unit field with /customise and a tested migration.
+
+## Verification
+
+npm test creates a temporary database, exercises every CLI command, and checks transactional imports, unchanged re-imports, source-state preservation, review invalidation, version conflicts, audit attribution and escaped reports. Windows and Linux CI use Node 20 and 22. A separate Postgres 17 job runs the same tests. TEST_DATABASE_URL must point to an empty disposable database.

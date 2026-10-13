@@ -1,0 +1,8 @@
+{
+  "source_id": "Assessment reference",
+  "name": "Assessment title",
+  "owner": "Assigned to",
+  "source_state": "Workflow state",
+  "due_date": "Due",
+  "renewal_date": "Renewal"
+}

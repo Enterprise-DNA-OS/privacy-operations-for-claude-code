@@ -1,11 +1,36 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "assessment-brief",
+    "title": "Privacy assessment review brief",
+    "for_each": "select id,name from assessments",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Assessment",
+        "sql": "select name,owner,status,likelihood,impact,due_date,renewal_date,evidence from assessments where id=$1",
+        "note": "Internal draft. Approval records document an operator review, not a legal certification."
+      },
+      {
+        "title": "Actions",
+        "sql": "select name,owner,status,due_date,evidence from actions where assessment_id=$1"
+      },
+      {
+        "title": "Review history",
+        "sql": "select actor,approver,evidence,assessment_version,created_at from reviews where assessment_id=$1"
+      }
+    ]
+  },
+  {
+    "name": "request-brief",
+    "title": "Privacy request handling brief",
+    "for_each": "select id,name from requests",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Request record",
+        "sql": "select name,kind,owner,received_on,due_date,deadline_basis,verified_on,response_on,status,evidence from requests where id=$1",
+        "note": "Internal draft, not a response letter. The privacy officer confirms identity, scope, deadlines and lawful grounds before a person responds."
+      }
     ]
   }
 ]

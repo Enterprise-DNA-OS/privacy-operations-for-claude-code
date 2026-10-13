@@ -1,13 +1,34 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Privacy Operations for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Privacy operations this week",
+    "subtitle": "Internal review of recorded evidence. Demo data is fictional.",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Assessment triage",
+        "sql": "select name,owner,risk_score,open_actions,due_date,current_review from assessment_queue order by risk_score desc nulls first"
+      },
+      {
+        "title": "Request deadlines",
+        "sql": "select name,owner,kind,due_date,days_left from request_queue where status='open' order by due_date nulls first"
+      },
+      {
+        "title": "Action queue",
+        "sql": "select name,owner,assessment,due_date from action_queue where status='open' order by due_date nulls first"
+      }
+    ]
+  },
+  {
+    "name": "evidence",
+    "title": "Privacy evidence review",
+    "sections": [
+      {
+        "title": "Retention",
+        "sql": "select * from retention_queue"
+      },
+      {
+        "title": "Record checks",
+        "sql": "select * from compliance_findings"
       }
     ]
   }
